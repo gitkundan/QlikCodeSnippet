@@ -1,0 +1,8 @@
+Inputfield I,K;
+
+Load 
+
+RecNo() as I, 
+RecNo() as K,
+RecNo() as M 
+autogenerate 10;
