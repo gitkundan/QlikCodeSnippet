@@ -1,0 +1,84 @@
+﻿TRACE 'Calendar Begins';
+// ============== Time Dimension ==============
+Let StartDate = num(makedate(2018,10,1)); //hardcode start date --start from Jan 2018?
+Let EndDate = num(makedate(2021,1,1)); //hardcode end date
+
+Calendar:
+Load *
+    ,AutoNumber(DateId,'%KEY_DateId')	as %KEY_DateId
+    ,Date(DateId,'DD/MM/YYYY') as Date
+    ,Year(DateId) AS [Year]
+    ,Dual(Year(DateId) & '-' & Month(DateId),MonthStart(DateId)) as YearMonth
+    ,Year(DateId) & '-' & 'Q' & Ceil(Month(DateId)/3) as YearQuarter,
+;
+Load
+    $(StartDate) + IterNo()-1   as DateId
+    Autogenerate 1
+While $(StartDate) + IterNo()-1   <= $(EndDate)
+;
+
+//Variable reset
+Let StartDate =;
+Let EndDate =;
+
+CalendarLinkTable:
+NoConcatenate Load Distinct
+    YearQuarter & '-' & YearMonth as %KEY_Calendar //Generic key for rowgrain = day
+    ,YearQuarter
+    ,YearMonth
+    ,Year
+Resident Calendar;
+Concatenate Load Distinct
+    YearQuarter & '-' & '<N/A>'  as %KEY_Calendar //Generic key for rowgrain = quarter
+    ,YearQuarter
+    ,Null() as YearMonth
+    ,Year
+Resident Calendar;
+// Drop Table Temp_Calendar;
+
+Outer Join (Calendar)
+Load * Resident CalendarLinkTable;
+Drop Table CalendarLinkTable;
+// Store Calendar into [lib://GSK_Data\Calendar.qvd](qvd);
+
+Map_CalendarKey:    //DateId to Generic Key conversion
+Mapping Load 
+    %KEY_DateId
+    ,%KEY_Calendar
+Resident Calendar
+Where Not IsNull(DateId)
+;
+
+Map_CalendarKeyQuarter:    //YearQuarter to Generic Key conversion
+Mapping Load 
+    YearQuarter
+    ,%KEY_Calendar
+Resident Calendar
+Where IsNull(DateId)
+;
+
+// ======== Asof calendar ========
+// Create a list of distinct Months
+tmpAsOfCalendar:
+Load 
+    Distinct YearMonth
+Resident Calendar ; 
+
+// Cartesian product with itself
+Join (tmpAsOfCalendar)
+Load YearMonth as AsOfMonth
+  Resident tmpAsOfCalendar ; 
+
+// Reload, filter and calculate additional fields
+[As-Of Calendar]:
+Load YearMonth
+  ,AsOfMonth
+  ,Round((AsOfMonth-YearMonth)*12/365.2425) as MonthDiff
+  ,Year(AsOfMonth)-Year(YearMonth) as YearDiff
+  Resident tmpAsOfCalendar
+      Where AsOfMonth >= YearMonth
+      ;
+
+Drop Table tmpAsOfCalendar;
+
+TRACE 'Calendar Ends';
