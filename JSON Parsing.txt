@@ -1,0 +1,42 @@
+Credit: Rob Wunderlich
+Source: https://community.qlik.com/t5/New-to-QlikView/How-to-read-JSON-data-in-Qlikview/td-p/89226
+
+Final:
+
+Generic Load RecId, Key, Value
+
+;
+
+LOAD
+
+RecId,
+
+trim(SubField(Pair,':',1)) as Key,
+
+trim(SubField(Pair,':',2)) as Value
+
+;
+
+LOAD
+
+RecId,
+
+SubField(Raw,',') as Pair
+
+;
+
+LOAD
+
+RecNo() as RecId,
+
+purgeChar(Raw,'{}"') as Raw
+
+Inline [
+
+Raw
+
+{"name":"John", "age":31, "city":"New York"}
+
+] (delimiter is '|')
+
+;
