@@ -1,5 +1,16 @@
-df = pd.read_excel('/content/drive/My Drive/Colab Notebooks/pokemon_data.xlsx',usecols=['Name','Type 1','Type 2','HP']) //import named columns
+Current tutorial: https://pandas.pydata.org/pandas-docs/stable/getting_started/10min.html#viewing-data
+Next tutorial: https://github.com/jvns/pandas-cookbook
+
+df = pd.read_csv('/content/drive/My Drive/Colab Notebooks/titanic.csv',usecols=['Survived','Sex','Pclass','Fare']) //import named columns
 df.head()
 df.tail()
 df.describe()
 df.groupby(['Sex']).mean()  //For every sex what is the mean of other columns === SQL Groupby
+df.T //transpose
+df1=df.sort_index() //creates another df with rows from bottom to top i.e. order of rows is reversed - not looking up values in any columns just record order is reversed
+df2=df.sort_index(ascending=0) # sort the pandas dataframe by index descending
+df.sort_values(by='Sex')  //sort by values in column Sex -- i.e. sort by values nothing to do by record 
+
+
+//pending: to look at better
+.loc
