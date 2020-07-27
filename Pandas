@@ -3,6 +3,19 @@ Next tutorial: https://github.com/jvns/pandas-cookbook
 //pending: to look at better
 .loc
 
+//==========================Headers to make plot beautiful===========================================
+https://github.com/jvns/pandas-cookbook/blob/master/cookbook/Chapter%201%20-%20Reading%20from%20a%20CSV.ipynb
+# Render our plots inline
+%matplotlib inline
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+pd.set_option('display.mpl_style', 'default') # Make the graphs a bit prettier
+plt.rcParams['figure.figsize'] = (15, 5)
+
+//====================================================================================================
+
 
 df = pd.read_csv('/content/drive/My Drive/Colab Notebooks/titanic.csv',usecols=['Survived','Sex','Pclass','Fare']) //import named columns
 df.head()
