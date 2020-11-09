@@ -1,0 +1,29 @@
+Set ErrorMode=0;
+//to read each file from the specified folder
+
+FOR EACH file in FileList('C:\Users\Dell\Downloads\*.xlsx');
+
+//In order to get the file information from SQLtables command making use of the ODBC connection format
+ODBC CONNECT32 TO [Excel Files;DBQ=$(file)];
+
+
+tables:
+SQLtables;
+DISCONNECT;
+
+FOR i = 0 to NoOfRows('tables')-1
+LET sheetName = purgeChar(purgeChar(peek('TABLE_NAME', i, 'tables'), chr(39)), chr(36));
+Table:
+Load * ,
+FileBaseName()as FIle,
+FileDir() as Dir,
+FileName() as File_Name,
+'$(sheetName)' as Sheet_name
+From $(file)(ooxml, embedded labels, table is [$(sheetName)]);
+
+NEXT i
+
+Next
+// Let vDoc1=DocumentName();
+// Let vDoc2=DocumentPath();
+// Let vDoc3=DocumentTitle();
