@@ -1,0 +1,19 @@
+// Generate some test data. 
+data:
+LOAD 
+	// Generate 20 distinct values for the field. 
+	ceil(Rand()*20) as MyField
+AutoGenerate 100000
+;	
+
+// Find the Min & Max of the field "MyField". 
+MinMax:
+LOAD 
+	// RecNo() is used as a counter to get FieldValue 1, 2, 3, etc.
+	// The num() function asssigs a format. Without it, the numbers appear as "?" in the UI.
+	num(min(FieldValue('MyField', RecNo()))) as MinValue,
+	num(max(FieldValue('MyField', RecNo()))) as MaxValue 
+
+// FieldValueCount = number of Field values	
+AutoGenerate FieldValueCount('MyField')	
+;
