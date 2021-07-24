@@ -1,0 +1,19 @@
+/*
+This subroutine lists file attributes from a directory and it's subdirectories.
+See the CALL statement on the next tab for example calls.
+*/
+SUB ListFiles (dir)		// Calling argument is relative or absolute directory path
+	// Load info about each file in the directory
+	FOR EACH file in filelist('$(dir)' &  '\*.*');
+		Files:
+		LOAD 
+			'$(file)' as FilePath,
+			subfield('$(file)', '.', -1) as FileExtension,
+			FileSize('$(file)') as FileSize,
+			FileTime('$(file)') as FileTime		
+		AUTOGENERATE 1;
+	NEXT file;
+  
+  // Start at Current directory
+Call ListFiles('lib://mydir\.')	
+
